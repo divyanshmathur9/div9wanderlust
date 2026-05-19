@@ -5,7 +5,7 @@ const Review = require("./models/review.js");
 
 module.exports.isLoggedIn=(req,res,next)=>{
     if(!req.isAuthenticated()){
-        req.session.redirectUrl = req.orignalUrl;
+        req.session.redirectUrl = req.originalUrl;
         req.flash("error", "You must be logged in to create a listing!");
         return res.redirect("/login");
       }
@@ -21,10 +21,12 @@ module.exports.saveRedirectUrl = (req, res, next) => {
 
 module.exports.isOwner = async (req, res, next) => {
     let { id } = req.params;
-    res.locals.currUser = req.user;
     let listing = await Listing.findById(id);
-    // console.log(req.locals.currUser);
-    if(!listing.owner.equals(res.locals.currUser._id)) {
+    if (!listing) {
+        req.flash("error", "Listing not found!");
+        return res.redirect("/listings");
+    }
+    if(!listing.owner.equals(req.user._id)) {
         req.flash("error", "You don't have permission to edit!");
         return res.redirect(`/listings/${id}`);
     }
@@ -53,10 +55,12 @@ module.exports.validateReview=(req,res,next)=>{
 
   module.exports.isReviewAuthor = async (req, res, next) => {
     let { id, reviewId } = req.params;
-    res.locals.currUser = req.user;
     let review = await Review.findById(reviewId);
-    // console.log(req.locals.currUser);
-    if(!review.author.equals(res.locals.currUser._id)) {
+    if (!review) {
+        req.flash("error", "Review not found!");
+        return res.redirect(`/listings/${id}`);
+    }
+    if(!review.author.equals(req.user._id)) {
         req.flash("error", "You do not have permission");
         return res.redirect(`/listings/${id}`);
     }

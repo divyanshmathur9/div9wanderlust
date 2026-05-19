@@ -1,17 +1,19 @@
 {
   "engines" :{
-    "node": "v20.16.0"
+    "node": ">=20.16.0"
   },
   "name": "majorproject",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node app.js",
+    "dev": "node --watch app.js",
+    "test": "echo \"No tests configured\""
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "",
+  "description": "Wanderlust travel listing app",
   "dependencies": {
     "@mapbox/mapbox-sdk": "^0.16.1",
     "bootstrap": "^5.3.3",

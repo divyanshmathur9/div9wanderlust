@@ -1,7 +1,26 @@
 const Listing = require("../models/listing");
 const mbxGeocoding = require('@mapbox/mapbox-sdk/services/geocoding');
+const ExpressError = require("../utils/ExpressError.js");
 const mapToken = process.env.MAP_TOKEN;
-const geocodingClient = mbxGeocoding({ accessToken: mapToken });
+const geocodingClient = mapToken ? mbxGeocoding({ accessToken: mapToken }) : null;
+
+const getGeometryFromLocation = async (location) => {
+  if (!geocodingClient) {
+    throw new ExpressError(500, "Mapbox token is not configured.");
+  }
+
+  const response = await geocodingClient.forwardGeocode({
+    query: location,
+    limit: 1
+  }).send();
+
+  const [feature] = response.body.features || [];
+  if (!feature) {
+    throw new ExpressError(400, "Please provide a valid location.");
+  }
+
+  return feature.geometry;
+};
 
 
 module.exports.index=async (req, res) => {
@@ -18,36 +37,32 @@ module.exports.showListing= async (req, res) => {
   const listing = await Listing.findById(id).populate({path:"reviews",populate:{path:"author",},}).populate("owner");
   if(!listing){
     req.flash("error", "Listing you requested for does not exists!");
-    res.redirect("/listings");
+    return res.redirect("/listings");
   }
   res.render("listings/show.ejs", { listing });
 };
 
 module.exports.createListing = async (req, res) => {
-  let response = await geocodingClient.forwardGeocode({
-    query: req.body.listing.location,
-    limit: 1
-  }).send();
-  
-  console.log(response);
+  const listingData = req.body.listing;
+  const geometry = await getGeometryFromLocation(listingData.location);
 
-  let newListing = req.body.listing;
-  let url = req.file.path;
-  let filename = req.file.filename;
+  const listing = new Listing({
+    title: listingData.title,
+    description: listingData.description,
+    price: listingData.price,
+    location: listingData.location,
+    country: listingData.country,
+    owner: req.user._id,
+    geometry,
+  });
 
-  if (typeof newListing.image === "string") {
-    newListing.image = { url: newListing.image };
+  if (req.file) {
+    listing.image = { url: req.file.path, filename: req.file.filename };
+  } else if (typeof listingData.image === "string" && listingData.image.trim() !== "") {
+    listing.image = { url: listingData.image.trim(), filename: "user-provided-image" };
   }
 
-  newListing.owner = req.user._id;
-  newListing.image = { url, filename };
-  newListing.geometry = response.body.features[0].geometry;
-
-  // Convert plain object to a Mongoose model before saving
-  const listing = new Listing(newListing);
-  let savedListing = await listing.save();
-
-  console.log(savedListing);
+  await listing.save();
   req.flash("success", "New Listing Created!");
   res.redirect("/listings");
 };
@@ -58,7 +73,7 @@ module.exports.renderEditForm=async (req, res) => {
   const listing = await Listing.findById(id);
   if(!listing){
     req.flash("error", "Listing you requested for does not exists!");
-    res.redirect("/listings");
+    return res.redirect("/listings");
   }
   let originalImageUrl= listing.image.url;
   originalImageUrl= originalImageUrl.replace("/upload", "/upload/w_250");
@@ -68,25 +83,45 @@ module.exports.renderEditForm=async (req, res) => {
 module.exports.updateListing=async (req, res) => {
   let { id } = req.params;
   let updatedListing = req.body.listing;
+  let listing = await Listing.findById(id);
 
-  if (typeof updatedListing.image === "string") {
-    updatedListing.image = { url: updatedListing.image };
+  if (!listing) {
+    req.flash("error", "Listing you requested for does not exists!");
+    return res.redirect("/listings");
   }
-  let listing= await Listing.findByIdAndUpdate(id, updatedListing);
+
+  const previousLocation = listing.location;
+  listing.title = updatedListing.title;
+  listing.description = updatedListing.description;
+  listing.price = updatedListing.price;
+  listing.location = updatedListing.location;
+  listing.country = updatedListing.country;
+
+  if (listing.location !== previousLocation) {
+    listing.geometry = await getGeometryFromLocation(listing.location);
+  }
+
   if(typeof req.file !=="undefined"){
-    let url = req.file.path;
-  let filename = req.file.filename;
-  listing.image = {url, filename};
-  await listing.save();
+    listing.image = {url: req.file.path, filename: req.file.filename};
+  } else if (typeof updatedListing.image === "string" && updatedListing.image.trim() !== "") {
+    listing.image = {
+      url: updatedListing.image.trim(),
+      filename: listing.image?.filename || "user-provided-image"
+    };
   }
-  
+
+  await listing.save();
   req.flash("success", "Listing Updated!");
   res.redirect(`/listings/${id}`);
 };
 
 module.exports.destroyListing=async (req, res) => {
   let { id } = req.params;
-  await Listing.findByIdAndDelete(id);
+  const listing = await Listing.findByIdAndDelete(id);
+  if (!listing) {
+    req.flash("error", "Listing you requested for does not exists!");
+    return res.redirect("/listings");
+  }
   req.flash("success", "Listing Deleted!");
   res.redirect("/listings");
 };
