@@ -32,12 +32,7 @@ if (process.env.NODE_ENV === "production" && !process.env.SECRET) {
 }
 
 
-// Connect to MongoDB
-main()
-  .then(() => console.log("Connected to DB"))
-  .catch((err) => console.error("DB connection error:", err));
-
-async function main() {
+async function connectDB() {
   await mongoose.connect(dbUrl);
 }
 
@@ -67,7 +62,7 @@ const sessionOptions = {
   resave: false,
   saveUninitialized: true,
   cookie: {
-    expires: Date.now() + 7 * 24 * 60 * 60 * 1000,
+    expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
     maxAge: 7 * 24 * 60 * 60 * 1000,
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
@@ -116,6 +111,17 @@ app.use((err, req, res, next) => {
   res.status(statusCode).render("error.ejs", { message });
 });
 
-app.listen(port, () => {
-  console.log(`Server is listening on port ${port}`);
-});
+const startServer = async () => {
+  try {
+    await connectDB();
+    console.log("Connected to DB");
+    app.listen(port, () => {
+      console.log(`Server is listening on port ${port}`);
+    });
+  } catch (err) {
+    console.error("DB connection error:", err);
+    process.exit(1);
+  }
+};
+
+startServer();

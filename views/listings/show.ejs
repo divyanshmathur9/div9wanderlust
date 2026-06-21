@@ -78,7 +78,7 @@
           class="form-control"
           required
         ></textarea>
-        <div class="invalid-feedback">Please add some comments for reivew</div>
+        <div class="invalid-feedback">Please add some comments for review</div>
       </div>
       <button class="btn btn-outline-dark">Submit</button>
     </form>
@@ -89,10 +89,10 @@
 <% if(listing.reviews.length > 0) { %>
     <div class="row">
       <p><b>All Reviews</b></p>
-<% for(review of listing. reviews){ %>
+<% for (const review of listing.reviews) { %>
   <div class="card col-5 ms-3 mb-3">
    <div class="card-body">
-    <h5 class="card-title">@<%= review.author.username %></h5>
+    <h5 class="card-title">@<%= review.author ? review.author.username : "deleted-user" %></h5>
     <p class="starability-result card-text" data-rating="<%= review.rating || 4%>"></p>
      <p class="card-text"><%= review.comment %></p> 
       </div>
