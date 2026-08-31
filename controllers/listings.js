@@ -3,6 +3,9 @@ const mbxGeocoding = require('@mapbox/mapbox-sdk/services/geocoding');
 const ExpressError = require("../utils/ExpressError.js");
 const mapToken = process.env.MAP_TOKEN;
 const geocodingClient = mapToken ? mbxGeocoding({ accessToken: mapToken }) : null;
+const { CATEGORIES, buildListingFilter, buildQueryString, getSort, normalizeQuery } = require("../utils/listingQuery");
+const PAGE_SIZE = 9;
+const normalizeAmenities = (amenities) => amenities ? (Array.isArray(amenities) ? amenities : [amenities]) : [];
 
 const getGeometryFromLocation = async (location) => {
   if (!geocodingClient) {
@@ -24,8 +27,25 @@ const getGeometryFromLocation = async (location) => {
 
 
 module.exports.index=async (req, res) => {
-    const allListings = await Listing.find({});
-    res.render("listings/index.ejs", { allListings });
+    const query = normalizeQuery(req.query);
+    const filter = buildListingFilter(query);
+    const totalListings = await Listing.countDocuments(filter);
+    const totalPages = Math.max(1, Math.ceil(totalListings / PAGE_SIZE));
+    query.page = Math.min(query.page, totalPages);
+    const allListings = await Listing.find(filter)
+      .sort(getSort(query.sort))
+      .skip((query.page - 1) * PAGE_SIZE)
+      .limit(PAGE_SIZE)
+      .lean();
+
+    res.render("listings/index.ejs", {
+      allListings,
+      categories: CATEGORIES,
+      query,
+      totalListings,
+      totalPages,
+      buildQueryString,
+    });
   };
 
 module.exports.renderNewForm=(req, res) => {
@@ -53,6 +73,9 @@ module.exports.createListing = async (req, res) => {
     location: listingData.location,
     country: listingData.country,
     owner: req.user._id,
+    category: listingData.category,
+    maxGuests: listingData.maxGuests,
+    amenities: normalizeAmenities(listingData.amenities),
     geometry,
   });
 
@@ -96,6 +119,9 @@ module.exports.updateListing=async (req, res) => {
   listing.price = updatedListing.price;
   listing.location = updatedListing.location;
   listing.country = updatedListing.country;
+  listing.category = updatedListing.category;
+  listing.maxGuests = updatedListing.maxGuests;
+  listing.amenities = normalizeAmenities(updatedListing.amenities);
 
   if (listing.location !== previousLocation) {
     listing.geometry = await getGeometryFromLocation(listing.location);

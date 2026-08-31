@@ -8,7 +8,9 @@
   "scripts": {
     "start": "node app.js",
     "dev": "node --watch app.js",
-    "test": "echo \"No tests configured\""
+    "test": "node --test test/*.test.js",
+    "check": "npm test && node --check app.js",
+    "data:import": "node scripts/importCuratedListings.js"
   },
   "keywords": [],
   "author": "",

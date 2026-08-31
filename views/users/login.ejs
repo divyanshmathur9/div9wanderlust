@@ -1,18 +1,1 @@
-<% layout("/layouts/boilerplate") %>
-<div class="row mt-3">
-    <h1 class="col-6 offset-3">Login</h1>
-    <div class="col-6 offset-3">
-        <form action="/login" method="POST" class="needs-validation" novalidate>
-            <div class="mb-3">
-                <label for="username" class="form-label">Username</label>
-                <input name="username" id="username" type="text" class="form-control" required>  
-            </div>
-            <div class="mb-3">
-                <label for="password" class="form-label">Password</label>
-                <input name="password" id="password" type="password" class="form-control" required>  
-                <div class="valid-feedback"> Looks good!</div>
-            </div>
-            <button class="btn btn-success">Login</button>
-        </form>
-    </div>
-</div>
+<% layout("/layouts/boilerplate") %><main class="auth-page"><section class="auth-visual login-visual"><div><p class="eyebrow">Welcome back</p><h1>Return to places that inspire you.</h1><p>Manage your listings and continue sharing thoughtful travel stories.</p></div></section><section class="auth-panel"><div class="auth-form"><p class="eyebrow">Member access</p><h2>Log in to Wanderlust</h2><p>New here? <a href="/signup">Create an account</a></p><form action="/login" method="POST" class="needs-validation" novalidate><label for="username">Username</label><input name="username" id="username" type="text" autocomplete="username" required><label for="password">Password</label><input name="password" id="password" type="password" autocomplete="current-password" required><button class="button-primary wide" type="submit">Log in</button></form></div></section></main>

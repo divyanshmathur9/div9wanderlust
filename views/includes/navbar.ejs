@@ -1,50 +1,7 @@
-<style>
-  .btn-search{
-    background-color: #fe424d;
-    color: white;
-    border-radius: 25px;
-    padding: 0 1rem 0 1rem;
-  }
-  .btn-search:hover {
-    background-color: #fe424d;
-    color: white;
-  }
-  .btn-search i{
-    display: inline;
-    margin-right: 0.5rem;
-  }
-  .search-inp {
-    border-radius: 25px;
-    padding: 0.5rem 3rem 0.5rem 3rem;
-  }
-</style>
-<nav class="navbar navbar-expand-md bg-body-light border-bottom sticky-top">
-    <div class="container-fluid">
-      <a class="navbar-brand" href="/listings"><i class="fa-regular fa-compass"></i></a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" >
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-        <div class="navbar-nav">
-         
-          <a class="nav-link" href="/listings">Explore</a>
-        </div>
-        <div class="navbar-nav ms-auto">
-          <form class="d-flex" role="search">
-            <input class="form-control me-2 search-inp" type="search" placeholder="Search destination">
-            <button class="btn btn-search" type="submit"><i class="fa-solid fa-magnifying-glass"></i>Search</button>
-          </form>
-        </div>
-        
-        <div class="navbar-nav ms-auto">
-          <a class="nav-link" href="/listings/new">AirBnb your home</a>
-          <% if(!currUser){ %>
-          <a class="nav-link "  href="/signup"><b>Sign Up</b></a>
-          <a class="nav-link" href="/login"><b>Log In</b></a>
-          <% } %> <% if(currUser){ %>
-          <a class="nav-link" href="/logout"><b>Log Out</b></a>
-          <% }  %>
-        </div>
-      </div>
-    </div>
-  </nav>
+<nav class="site-nav navbar navbar-expand-lg sticky-top" aria-label="Primary navigation"><div class="container-fluid nav-shell">
+  <a class="brand" href="/listings" aria-label="Wanderlust home"><span class="brand-mark"><i class="fa-regular fa-compass"></i></span><span>Wanderlust</span></a>
+  <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#primaryNav" aria-controls="primaryNav" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+  <div class="collapse navbar-collapse" id="primaryNav"><form class="nav-search" role="search" action="/listings" method="GET"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i><label class="visually-hidden" for="nav-search">Search stays</label><input id="nav-search" name="q" type="search" value="<%= typeof query !== 'undefined' ? query.q : '' %>" placeholder="Search destinations or stays"><button type="submit">Search</button></form>
+    <div class="nav-actions"><a class="nav-host" href="/listings/new"><i class="fa-regular fa-square-plus"></i> List your place</a><% if (!currUser) { %><a href="/signup">Sign up</a><a class="nav-login" href="/login">Log in</a><% } else { %><span class="nav-user">Hi, <%= currUser.username %></span><form action="/logout" method="POST"><button class="nav-logout" type="submit">Log out</button></form><% } %></div>
+  </div>
+</div></nav>

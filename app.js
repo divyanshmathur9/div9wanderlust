@@ -39,7 +39,18 @@ async function connectDB() {
 // Setup EJS and Middleware
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
-app.use(express.urlencoded({ extended: true }));
+app.disable("x-powered-by");
+if (process.env.NODE_ENV === "production") app.set("trust proxy", 1);
+app.use((req, res, next) => {
+  res.set({
+    "X-Content-Type-Options": "nosniff",
+    "X-Frame-Options": "SAMEORIGIN",
+    "Referrer-Policy": "strict-origin-when-cross-origin",
+    "Permissions-Policy": "camera=(), microphone=(), geolocation=()",
+  });
+  next();
+});
+app.use(express.urlencoded({ extended: true, limit: "100kb" }));
 app.use(methodOverride("_method"));
 app.engine("ejs", ejsMate);
 app.use(express.static(path.join(__dirname, "/public")));
@@ -60,12 +71,13 @@ const sessionOptions = {
   store,
   secret: sessionSecret,
   resave: false,
-  saveUninitialized: true,
+  saveUninitialized: false,
   cookie: {
     expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
     maxAge: 7 * 24 * 60 * 60 * 1000,
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
   },
 };
 
@@ -83,6 +95,7 @@ app.use((req, res, next) => {
   res.locals.success = req.flash("success");
   res.locals.error = req.flash("error");
   res.locals.currUser = req.user;
+  res.locals.currentPath = req.path;
   next();
 });
 
@@ -108,6 +121,9 @@ app.all("*", (req, res, next) => {
 
 app.use((err, req, res, next) => {
   let { statusCode = 500, message = "Something went wrong!" } = err;
+  if (statusCode >= 500 && process.env.NODE_ENV === "production") {
+    message = "Something went wrong. Please try again.";
+  }
   res.status(statusCode).render("error.ejs", { message });
 });
 

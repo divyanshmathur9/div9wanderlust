@@ -3,6 +3,11 @@ const Schema = mongoose.Schema;
 const Review = require("./review");
 
 const listingSchema = new Schema({
+  sourceKey: {
+      type: String,
+      unique: true,
+      sparse: true,
+  },
   title: {
       type: String,
       required: true,
@@ -24,6 +29,21 @@ const listingSchema = new Schema({
   price: Number,
   location: String,
   country: String,
+  category: {
+      type: String,
+      enum: ["trending", "beach", "mountains", "cities", "unique"],
+      default: "trending",
+      index: true,
+  },
+  amenities: {
+      type: [String],
+      default: [],
+  },
+  maxGuests: {
+      type: Number,
+      min: 1,
+      default: 2,
+  },
   reviews: [
       {
           type: Schema.Types.ObjectId,
@@ -47,6 +67,9 @@ const listingSchema = new Schema({
   }
 
 });
+
+listingSchema.index({ title: "text", description: "text", location: "text", country: "text" });
+listingSchema.index({ category: 1, price: 1 });
 
 // Middleware to delete reviews when a listing is deleted
 listingSchema.post("findOneAndDelete", async (listing) => {

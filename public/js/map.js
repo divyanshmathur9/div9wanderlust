@@ -13,11 +13,7 @@ if (mapToken && hasCoordinates) {
 
   new mapboxgl.Marker({ color: "red" })
     .setLngLat(listing.geometry.coordinates)
-    .setPopup(
-      new mapboxgl.Popup({ offset: 25 }).setHTML(
-        `<h4>${listing.title}</h4><p>Exact location will be provided after booking!</p>`
-      )
-    )
+    .setPopup(new mapboxgl.Popup({ offset: 25 }).setText(`${listing.title} · Approximate location`))
     .addTo(map);
 } else {
   const mapContainer = document.getElementById("map");

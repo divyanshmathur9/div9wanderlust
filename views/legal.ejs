@@ -1,0 +1,18 @@
+<% layout("/layouts/boilerplate") %>
+<main class="legal-page page-shell">
+  <% if (page === "privacy") { %>
+    <p class="eyebrow">Your data</p>
+    <h1>Privacy policy</h1>
+    <p class="legal-updated">Last updated: August 2026</p>
+    <section><h2>Information we collect</h2><p>Wanderlust stores the account, listing, image, and review information you choose to provide so the service can function.</p></section>
+    <section><h2>How it is used</h2><p>Your information is used to authenticate your account, publish listings and reviews, and improve the reliability of the platform.</p></section>
+    <section><h2>Third-party services</h2><p>Images and maps may be processed by Cloudinary and Mapbox. Database and hosting providers process application data according to their own policies.</p></section>
+  <% } else { %>
+    <p class="eyebrow">Using Wanderlust</p>
+    <h1>Terms of service</h1>
+    <p class="legal-updated">Last updated: August 2026</p>
+    <section><h2>Listings and reviews</h2><p>You are responsible for content you publish. Information should be accurate, lawful, and respectful of other users.</p></section>
+    <section><h2>Accounts</h2><p>Keep your login credentials secure and use the service only for legitimate travel discovery and listing management.</p></section>
+    <section><h2>Availability</h2><p>This portfolio application is provided for demonstration purposes and does not currently process real reservations or payments.</p></section>
+  <% } %>
+</main>

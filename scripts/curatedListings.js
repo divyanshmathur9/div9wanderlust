@@ -1,0 +1,32 @@
+const image = (id) => `https://images.unsplash.com/${id}?auto=format&fit=crop&w=1200&q=82`;
+
+module.exports = [
+  ["glass-cabin-manali","Glass Cabin Above the Pines","A quiet glass-front cabin with sweeping Himalayan views, a reading loft, and sunrise breakfasts on the deck.",5200,"Manali","India","mountains",4,[77.1887,32.2396],"photo-1449158743715-0a90ebb6d2d8"],
+  ["varkala-cliff-house","Varkala Cliff House","A breezy coastal home perched above the Arabian Sea, minutes from the beach and local cafés.",6400,"Varkala","India","beach",5,[76.7163,8.7379],"photo-1499793983690-e29da59ef1c2"],
+  ["coorg-treehouse","Canopy Treehouse","Wake among coffee plantations in a handcrafted treehouse with forest walks and a private balcony.",7100,"Coorg","India","unique",3,[75.7382,12.3375],"photo-1520250497591-112f2f40a3f4"],
+  ["jaipur-haveli","Rose Courtyard Haveli","A restored heritage home with carved arches, a flower-filled courtyard, and old-city charm.",4600,"Jaipur","India","cities",4,[75.7873,26.9124],"photo-1599661046289-e31897846e41"],
+  ["assagao-villa","Susegad Pool Villa","A private Goan villa surrounded by palms, with an infinity pool and generous indoor-outdoor living.",9800,"Assagao","India","beach",6,[73.8996,15.6061],"photo-1613490493576-7fde63acd811"],
+  ["mussoorie-cottage","Old Pines Cottage","A warm stone cottage with valley views, a fireplace, and peaceful trails beyond the garden gate.",3900,"Mussoorie","India","mountains",4,[78.0644,30.4598],"photo-1564013799919-ab600027ffc6"],
+  ["udaipur-lake-home","Lake Pichola House","An elegant lakeside retreat with rooftop dining and sunset views across Udaipur's palaces.",8200,"Udaipur","India","trending",4,[73.6833,24.5854],"photo-1596395819057-e37f55a8516b"],
+  ["munnar-tea-bungalow","Wilderness Tea Bungalow","A century-old planter's bungalow wrapped in tea gardens, misty hills, and quiet verandas.",5800,"Munnar","India","mountains",5,[77.0595,10.0889],"photo-1544735716-392fe2489ffa"],
+  ["pondicherry-villa","French Quarter Villa","A sun-washed heritage villa with tiled floors, shaded courtyards, and bicycles for exploring town.",5500,"Puducherry","India","cities",4,[79.8083,11.9416],"photo-1600566753086-00f18fb6b3ea"],
+  ["alleppey-houseboat","Backwater Houseboat","A private houseboat journey through Kerala's backwaters with a local cook and open-air lounge.",7600,"Alappuzha","India","unique",4,[76.3388,9.4981],"photo-1602216056096-3b40cc0c9944"],
+  ["jaisalmer-dome","Desert Sky Dome","A design-led geodesic dome beneath the Thar stars, complete with desert dinner and sunrise tea.",6800,"Jaisalmer","India","unique",2,[70.9083,26.9157],"photo-1509316785289-025f5b846b35"],
+  ["rishikesh-river-house","Ganges River House","A peaceful riverside home for slow mornings, yoga sessions, and walks into Rishikesh.",4300,"Rishikesh","India","trending",4,[78.2676,30.0869],"photo-1500530855697-b586d89ba3ee"],
+  ["darjeeling-loft","Kanchenjunga View Loft","A bright hillside loft with tea-estate views and a window seat made for mountain sunrises.",4100,"Darjeeling","India","mountains",3,[88.2627,27.0410],"photo-1486911278844-a81c5267e227"],
+  ["hampi-stone-house","Hampi Stone House","An earthy modern home inspired by the surrounding boulders, with cycling routes to the ruins.",3700,"Hampi","India","unique",3,[76.4600,15.3350],"photo-1582719478250-c89cae4dc85b"],
+  ["mumbai-sea-loft","Bandra Sea Loft","A polished city loft with sea glimpses, local art, and Mumbai's best cafés just downstairs.",8500,"Mumbai","India","cities",2,[72.8295,19.0596],"photo-1524758631624-e2822e304c36"],
+  ["kashmir-chalet","Gulmarg Cedar Chalet","A cedar-lined chalet built for snow days, with a wood stove and gondola access nearby.",9200,"Gulmarg","India","mountains",6,[74.3805,34.0484],"photo-1520984032042-162d526883e0"],
+  ["andaman-beach-cottage","Havelock Beach Cottage","A barefoot cottage beside clear water, with a shaded deck and reef trips arranged locally.",7800,"Swaraj Dweep","India","beach",3,[92.9876,11.9761],"photo-1507525428034-b723cf961d3e"],
+  ["kodaikanal-a-frame","Kodaikanal A-Frame","A timber A-frame hidden among eucalyptus trees, with a firepit and long valley views.",4900,"Kodaikanal","India","mountains",4,[77.4892,10.2381],"photo-1510798831971-661eb04b3739"],
+  ["varanasi-terrace","Ghat View Terrace","A characterful old-city home with a rooftop overlooking the Ganges and dawn boat rides nearby.",3600,"Varanasi","India","cities",3,[83.0067,25.3176],"photo-1561361058-c24e02d2eaa1"],
+  ["goa-casa","Casa De Mar","A contemporary coastal house with sunset decks, an open kitchen, and a path to the beach.",11200,"Alibaug","India","beach",8,[72.8722,18.6414],"photo-1600607687939-ce8a6c25118c"],
+  ["shillong-cottage","Shillong Garden Cottage","A cheerful cottage set in a lush garden, close to waterfalls, cafés, and music venues.",3400,"Shillong","India","trending",3,[91.8933,25.5788],"photo-1568605114967-8130f3a36994"],
+  ["spiti-mud-home","Spiti Earthen Home","A solar-heated traditional home offering expansive high-desert views and home-cooked meals.",3200,"Kaza","India","unique",2,[78.0727,32.2276],"photo-1464278533981-50106e6176b1"],
+  ["ooty-colonial-home","Blue Mountains Bungalow","A graceful colonial bungalow with fireplaces, lawns, and afternoon tea among the Nilgiris.",6100,"Ooty","India","mountains",5,[76.6950,11.4102],"photo-1511818966892-d7d671e672a2"],
+  ["delhi-design-apartment","Lodhi Design Apartment","A calm, art-filled apartment near Lodhi Garden with a dedicated workspace and leafy balcony.",6900,"New Delhi","India","cities",4,[77.2196,28.5918],"photo-1522708323590-d24dbb6b0267"],
+].map(([sourceKey,title,description,price,location,country,category,maxGuests,coordinates,imageId]) => ({
+  sourceKey,title,description,price,location,country,category,maxGuests,
+  amenities:["WiFi","Kitchen","Workspace","Parking"],
+  geometry:{type:"Point",coordinates},image:{url:image(imageId),filename:sourceKey},
+}));
