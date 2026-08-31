@@ -6,6 +6,7 @@ const {isLoggedIn,isOwner,validateListing}= require("../middleware.js");
 const listingController = require("../controllers/listings.js");
 const multer  = require('multer');
 const {storage} = require("../cloudConfig.js");
+const { verifyCsrfToken } = require("../utils/security.js");
 const upload = multer({
   storage,
   limits: { fileSize: 5 * 1024 * 1024, files: 1 },
@@ -18,7 +19,7 @@ const upload = multer({
 router
 .route("/")
 .get(wrapAsync(listingController.index))
-.post(isLoggedIn,upload.single('listing[image]'),validateListing, wrapAsync(listingController.createListing));
+.post(isLoggedIn,upload.single('listing[image]'),verifyCsrfToken,validateListing, wrapAsync(listingController.createListing));
 
 
 // NEW
@@ -27,7 +28,7 @@ router.get("/new", isLoggedIn, listingController.renderNewForm);
 router
 .route("/:id")
 .get(wrapAsync(listingController.showListing))
-.put(isLoggedIn,isOwner,upload.single('listing[image]'), validateListing, wrapAsync(listingController.updateListing))
+.put(isLoggedIn,isOwner,upload.single('listing[image]'),verifyCsrfToken, validateListing, wrapAsync(listingController.updateListing))
 .delete(isLoggedIn,isOwner, wrapAsync(listingController.destroyListing));
 
 

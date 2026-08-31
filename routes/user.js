@@ -4,16 +4,18 @@ const wrapAsync = require("../utils/wrapAsync.js");
 const passport = require("passport");
 const { saveRedirectUrl, isLoggedIn } = require("../middleware.js");
 const userController = require("../controllers/users.js")
+const { createRateLimiter } = require("../utils/security.js");
+const authLimiter = createRateLimiter({ windowMs: 15 * 60 * 1000, limit: 12, message: "Too many sign-in attempts. Please try again later." });
 
 router
 .route("/signup")
 .get( userController.renderSignupForm)
-.post( wrapAsync(userController.signup));
+.post(authLimiter, wrapAsync(userController.signup));
 
 router
 .route("/login")
 .get(userController.renderLoginForm)
-.post(saveRedirectUrl, passport.authenticate("local" ,{failureRedirect:'/login', failureFlash:true}),userController.login);
+.post(authLimiter, saveRedirectUrl, passport.authenticate("local" ,{failureRedirect:'/login', failureFlash:true}),userController.login);
 
 
 router.post("/logout", userController.logout);

@@ -1,53 +1,88 @@
 # Wanderlust
-Wanderlust is a full-stack travel listing web app inspired by Airbnb-style workflows. Users can sign up, create listings, upload photos, browse places, and leave reviews.
 
-## Features
-- User authentication (signup, login, logout) with Passport.js
-- Create, read, update, and delete listings
-- Review and rating system for listings
-- Image uploads to Cloudinary using Multer
-- Geocoding + map integration using Mapbox
-- Flash messages and persistent sessions with MongoDB store
+A full-stack travel-stay marketplace built with Node.js, Express, EJS, MongoDB, Mapbox, and Cloudinary. Wanderlust supports discovery, hosting, reviews, saved stays, and date-based reservations across 50 curated listings.
 
-## Tech Stack
-- Node.js + Express.js
-- MongoDB + Mongoose
-- EJS + EJS-Mate templating
-- Passport Local Authentication
-- Cloudinary (media storage)
-- Mapbox SDK (geocoding/maps)
-- Bootstrap 5 (UI)
+## Highlights
 
-## Prerequisites
-- Node.js `v20.16.0`
-- npm
-- MongoDB Atlas database URL
-- Cloudinary account
-- Mapbox access token
+- Responsive editorial travel interface for desktop and mobile
+- Search across titles, descriptions, locations, and countries
+- Category filters, price sorting, empty states, and pagination
+- Passport-based signup, login, sessions, and role-aware dashboards
+- Owner-authorized listing management with Cloudinary image uploads
+- Date-based reservations with guest limits, price totals, overlap protection, and cancellation
+- Host reservation visibility, guest trip history, saved stays, and reviews
+- Mapbox geocoding and interactive listing maps
+- Validation, CSRF protection, rate limiting, upload limits, security headers, and health checks
+- Idempotent curated-listing import and automated unit tests
 
-## Environment Variables
-Create a `.env` file in the project root with:
+## Architecture
+
+```text
+routes → middleware → controllers → Mongoose models → MongoDB
+                         ↓
+                    EJS views
+                         ↓
+                CSS + browser scripts
+```
+
+Core models: `User`, `Listing`, `Review`, and `Booking`.
+
+## Local setup
+
+Requirements: Node.js 20+, npm, MongoDB, Cloudinary, and Mapbox accounts.
+
+```bash
+git clone https://github.com/divyanshmathur9/div9wanderlust.git
+cd div9wanderlust
+npm install
+```
+
+Create `.env`:
 
 ```env
-ATLASDB_URL=<your_mongodb_connection_string>
-SECRET=<your_session_secret>
-CLOUD_NAME=<your_cloudinary_cloud_name>
-CLOUD_API_KEY=<your_cloudinary_api_key>
-CLOUD_API_SECRET=<your_cloudinary_api_secret>
-MAP_TOKEN=<your_mapbox_access_token>
+ATLASDB_URL=<mongodb-connection-string>
+SECRET=<long-random-session-secret>
+CLOUD_NAME=<cloudinary-cloud-name>
+CLOUD_API_KEY=<cloudinary-api-key>
+CLOUD_API_SECRET=<cloudinary-api-secret>
+MAP_TOKEN=<mapbox-public-token>
 NODE_ENV=development
 ```
 
-## Run Locally
+Run the app:
+
 ```bash
-npm install
 npm start
 ```
 
-App runs at: `http://localhost:8080`
+Open `http://localhost:8080/listings`.
 
-For auto-restart during development:
+## Commands
+
 ```bash
-npm run dev
+npm test          # Run the unit test suite
+npm run check     # Run tests and application syntax checks
+npm run dev       # Start with Node watch mode
+npm run data:import
 ```
 
+The curated import is idempotent. Before running it, set `IMPORT_OWNER_USERNAME` to an existing Wanderlust account. Existing listings are not overwritten.
+
+## Production
+
+- Set `NODE_ENV=production` and all required environment variables.
+- Use a strong `SECRET`; the app refuses to start in production without one.
+- `GET /healthz` reports application and database readiness for a hosting health check.
+- Payments are intentionally not processed; reservations demonstrate availability and workflow logic.
+
+## Tests
+
+The Node test suite covers query normalization, search filters, sorting, pagination query strings, date parsing, guest/date validation, night calculations, and booking-overlap queries.
+
+## Security note
+
+Wanderlust includes CSRF tokens, request limits on authentication and booking attempts, restricted upload types and sizes, secure cookie defaults, defensive headers, and production-safe error messages. Dependency audits should still be reviewed before every deployment.
+
+## License
+
+ISC

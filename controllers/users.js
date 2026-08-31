@@ -52,7 +52,8 @@ module.exports.dashboard = async (req, res) => {
         Booking.find({ guest: req.user._id }).populate("listing").sort({ createdAt: -1 }).lean(),
         User.findById(req.user._id).populate("favorites").lean(),
     ]);
-    res.render("users/dashboard.ejs", { ownedListings, bookings, favorites: user.favorites || [], isHost: req.user.role === "host" || ownedListings.length > 0 });
+    const hostBookings = ownedListings.length ? await Booking.find({ listing: { $in: ownedListings.map((listing) => listing._id) } }).populate("listing guest").sort({ checkIn: 1 }).lean() : [];
+    res.render("users/dashboard.ejs", { ownedListings, bookings, hostBookings, favorites: user.favorites || [], isHost: req.user.role === "host" || ownedListings.length > 0 });
 };
 
 module.exports.toggleFavorite = async (req, res) => {

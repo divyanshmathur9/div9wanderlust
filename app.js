@@ -17,6 +17,7 @@ const flash = require("connect-flash");
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
 const User = require("./models/user.js");
+const { csrfProtection } = require("./utils/security.js");
 
 const listingRouter = require("./routes/listing.js");
 const reviewRouter = require("./routes/review.js");
@@ -84,6 +85,7 @@ const sessionOptions = {
 
 app.use(session(sessionOptions));
 app.use(flash());
+app.use(csrfProtection);
 
 app.use(passport.initialize());
 app.use(passport.session());
@@ -111,6 +113,11 @@ app.use((req, res, next) => {
 //   let registeredUser = await User.register(fakeUser, "helloworld");
 //   res.send(registeredUser);
 // });
+
+app.get("/healthz", (req, res) => {
+  const databaseReady = mongoose.connection.readyState === 1;
+  res.status(databaseReady ? 200 : 503).json({ status: databaseReady ? "ok" : "degraded", database: databaseReady ? "connected" : "disconnected", uptimeSeconds: Math.round(process.uptime()) });
+});
 
 app.use("/listings", listingRouter);
 app.use("/listings/:id/reviews", reviewRouter);

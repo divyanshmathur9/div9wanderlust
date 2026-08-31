@@ -17,6 +17,18 @@
     })
   })()
 
+const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+if (csrfToken) {
+  document.querySelectorAll('form[method="POST"], form[method="post"]').forEach((form) => {
+    if (form.querySelector('input[name="_csrf"]')) return;
+    const input = document.createElement("input");
+    input.type = "hidden";
+    input.name = "_csrf";
+    input.value = csrfToken;
+    form.prepend(input);
+  });
+}
+
 document.querySelectorAll("form[data-confirm]").forEach((form) => {
   form.addEventListener("submit", (event) => {
     if (!window.confirm(form.dataset.confirm)) event.preventDefault();
