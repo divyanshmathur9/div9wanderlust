@@ -6,7 +6,9 @@ const userSchema = new Schema({
     email: {
         type: String,
         required: true, 
-    }
+    },
+    role: { type: String, enum: ["guest", "host"], default: "guest", index: true },
+    favorites: [{ type: Schema.Types.ObjectId, ref: "Listing" }]
 });
 
 userSchema.plugin(passportLocalMongoose); 

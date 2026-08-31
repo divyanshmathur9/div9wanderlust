@@ -1,6 +1,8 @@
 const Listing = require("../models/listing");
 const mbxGeocoding = require('@mapbox/mapbox-sdk/services/geocoding');
 const ExpressError = require("../utils/ExpressError.js");
+const Booking = require("../models/booking");
+const User = require("../models/user");
 const mapToken = process.env.MAP_TOKEN;
 const geocodingClient = mapToken ? mbxGeocoding({ accessToken: mapToken }) : null;
 const { CATEGORIES, buildListingFilter, buildQueryString, getSort, normalizeQuery } = require("../utils/listingQuery");
@@ -59,7 +61,9 @@ module.exports.showListing= async (req, res) => {
     req.flash("error", "The listing you requested does not exist.");
     return res.redirect("/listings");
   }
-  res.render("listings/show.ejs", { listing });
+  const unavailableDates = await Booking.find({ listing: id, status: "confirmed", checkOut: { $gte: new Date() } }).select("checkIn checkOut -_id").lean();
+  const isFavorite = Boolean(req.user?.favorites?.some((favorite) => favorite.equals(listing._id)));
+  res.render("listings/show.ejs", { listing, unavailableDates, isFavorite });
 };
 
 module.exports.createListing = async (req, res) => {
@@ -86,6 +90,7 @@ module.exports.createListing = async (req, res) => {
   }
 
   await listing.save();
+  if (req.user.role !== "host") await User.findByIdAndUpdate(req.user._id, { role: "host" });
   req.flash("success", "New Listing Created!");
   res.redirect("/listings");
 };

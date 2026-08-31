@@ -1,4 +1,6 @@
 const User = require("../models/user.js");
+const Listing = require("../models/listing.js");
+const Booking = require("../models/booking.js");
 
 module.exports.renderSignupForm=(req, res)=>{
     res.render("users/signup.ejs");
@@ -42,4 +44,24 @@ module.exports.logout=(req, res,next)=>{
         req.flash("success", "You are logged out now!");
         res.redirect("/listings");
     });
+};
+
+module.exports.dashboard = async (req, res) => {
+    const [ownedListings, bookings, user] = await Promise.all([
+        Listing.find({ owner: req.user._id }).sort({ _id: -1 }).lean(),
+        Booking.find({ guest: req.user._id }).populate("listing").sort({ createdAt: -1 }).lean(),
+        User.findById(req.user._id).populate("favorites").lean(),
+    ]);
+    res.render("users/dashboard.ejs", { ownedListings, bookings, favorites: user.favorites || [], isHost: req.user.role === "host" || ownedListings.length > 0 });
+};
+
+module.exports.toggleFavorite = async (req, res) => {
+    const listing = await Listing.findById(req.params.id);
+    if (!listing) { req.flash("error", "Listing not found."); return res.redirect("/listings"); }
+    const user = await User.findById(req.user._id);
+    const index = user.favorites.findIndex((favorite) => favorite.equals(listing._id));
+    if (index >= 0) { user.favorites.splice(index, 1); req.flash("success", "Removed from saved stays."); }
+    else { user.favorites.push(listing._id); req.flash("success", "Saved for later."); }
+    await user.save();
+    res.redirect(req.get("referer") || `/listings/${listing._id}`);
 };
